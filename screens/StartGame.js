@@ -1,9 +1,21 @@
 import React, {useState} from "react";
-import { View, Text, StyleSheet, Button, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Button, 
+  TouchableWithoutFeedback, 
+  Keyboard,
+  Alert
+ } from "react-native";
 
 import Card from "../components/Card";
 import Colors from "../constants/colors";
 import Input from "../components/Input";
+import NumberContainer from '../components/NumberContainer';
+import BodyText from '../components/BodyText';
+import TitleText from '../components/TitleText';
+import MainButton from '../components/MainButton';
 
 const StartGame = (props) => {
 
@@ -22,18 +34,32 @@ const StartGame = (props) => {
 
   const confirmInputHandler = () => {
     const chosenNumber = parseInt(enteredValue);
-    if(chosenNumber === NaN || chosenNumber <= 0 || chosenNumber > 99){
+    if(isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber > 99){
+      Alert.alert('invalid number!', 'Number has to be a number between 1 and 99.', [{text:'Okay',style:'destructive',onPress: resetInputHandler}]
+      );
       return;
     }
     setConfirmed(true);
     setEnteredValue('');
     setSelectedNumber(chosenNumber);
+    Keyboard.dismiss();
   };
 
-  let confirmedOutput
+  let confirmedOutput;
 
   if(confirmed){
-    confirmedOutput = <Text>Chosen Number:{selectedNumber}</Text>
+    confirmedOutput = (
+    <Card style = {styles.summaryContainer}>
+      <Text>You Selected</Text>
+      <NumberContainer>
+        {selectedNumber}
+      </NumberContainer>
+      
+      <MainButton onPress ={() => props.onStartGame(selectedNumber)}>
+        START GAME
+      </MainButton>
+      </Card>
+    );
   };
 
   return (
@@ -41,9 +67,9 @@ const StartGame = (props) => {
       Keyboard.dismiss();
     }}>
     <View style={styles.screens}>
-      <Text style={styles.title}>Start a New Game!</Text>
+      <TitleText style={styles.title}>Start a New Game!</TitleText>
       <Card style={styles.inputContainer}>
-        <Text>Select a Number</Text>
+        <BodyText> Select a Number </BodyText>
         <Input
           style={styles.input}
           blurOnSubmit
@@ -58,13 +84,13 @@ const StartGame = (props) => {
           <View style={styles.button}>
             <Button 
             title="Reset" 
-            onpress={resetInputHandler} 
+            onPress={resetInputHandler} 
             color={Colors.accent} />
           </View>
           <View style={styles.button}>
             <Button 
             title="Confirm" 
-            onpress={confirmInputHandler} 
+            onPress={confirmInputHandler} 
             color={Colors.primary} />
           </View>
         </View>
@@ -83,6 +109,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     marginVertical: 10,
+    fontFamily: 'open-sans-bold'
   },
   inputContainer: {
     width: 300,
@@ -105,6 +132,12 @@ const styles = StyleSheet.create({
     width: 50,
     textAlign: "center",
   },
+  summaryContainer: {
+    marginTop: 20,
+    alignItems: 'center'
+  },
+
+
 });
 
 export default StartGame;
